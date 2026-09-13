@@ -1,7 +1,7 @@
 import Image from 'next/image';
 export default function Hero() {
   return (
-    <section className="sticky top-0 z-10 min-h-screen flex items-center rounded-t-[40px] bg-[#f5efe6] px-16 py-10">
+    <section className="sticky top-0 z-10 min-h-screen flex flex-col lg:flex-row items-center rounded-t-[40px] bg-[#f5efe6] px-6 lg:px-16 pt-28 lg:px-10 pb-10">
       <div className="flex-[1.2]">
 
         <p className="uppercase tracking-widest text-sm text-[#8a7460] mb-4">
@@ -9,7 +9,8 @@ export default function Hero() {
         </p>
 
         <h1 className="text-5xl font-semibold leading-tight mb-6">
-          Realce o que te faz única.
+          Realce o que te faz <span className="text-[#b7793f]">única.</span>
+
         </h1>
 
         <p className="text-lg text-[#5c4a3a] max-w-md mb-8">
@@ -26,12 +27,12 @@ export default function Hero() {
           </button>
         </div>
       </div>
-      <div className="flex-[0.8] relative h-[700px]">
+      <div className="w-full h-[400px] relative mt-8 lg:mt-0 lg:flex-[0.8] lg:h-[700px]">
         <Image
           src="https://images.unsplash.com/photo-1782159981479-0fafb56d3cd6"
           alt="Dra. Valentina Villar"
           fill
-          className="object-cover rounded-3xl"
+          className="object-cover object-top rounded-3xl"
         />
         <div className="absolute -top-6 -left-6 bg-white rounded-2xl px-5 py-4 shadow-lg">
           <p className="font-serif italic text-3xl text-[#b8794f]">
