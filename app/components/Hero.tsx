@@ -1,7 +1,7 @@
 import Image from 'next/image';
 export default function Hero() {
   return (
-    <section className="sticky top-0 z-10 min-h-screen flex flex-col lg:flex-row items-center rounded-t-[40px] bg-[#f5efe6] px-6 lg:px-16 pt-28 lg:px-10 pb-10">
+    <section className="min-h-screen flex flex-col lg:flex-row items-center rounded-t-[40px] bg-[#f5efe6] px-6 lg:px-16 pt-28 pb-10">
       <div className="flex-[1.2]">
 
         <p className="uppercase tracking-widest text-sm text-[#8a7460] mb-4">

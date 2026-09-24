@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 export default function Header() {
-  const [MenuAberto, setMenuAberto] = useState(false);
+  const [menuAberto, setMenuAberto] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-16 py-4 bg-[#f5efe6] border-b border-[#e8ddd0]">
@@ -22,7 +22,7 @@ export default function Header() {
         <button className="hidden lg:block bg-[#b8794f] text-white px-5 py-2 rounded-full text-sm font-medium">
             Agendar Consulta <span>→</span>
         </button>
-        <button onClick={() => setMenuAberto(!MenuAberto)}
+        <button onClick={() => setMenuAberto(!menuAberto)}
         className="lg:hidden text-2xl text-[#2a1a12]">
             ☰
         </button>

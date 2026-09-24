@@ -1,7 +1,7 @@
 import Image from 'next/image';
 export default function Sobre() {
   return (
-      <section className="sticky top-0 z-20 min-h-screen flex flex-col lg:flex-row items-center gap-8 lg:gap-16 rounded-t-[40px] bg-[#f5efe6] px-6 lg:px-16 py-10">
+      <section className="min-h-screen flex flex-col lg:flex-row items-center gap-8 lg:gap-16 rounded-t-[40px] bg-[#f5efe6] px-6 lg:px-16 py-10">
         <div className="w-full h-[350px] relative lg:flex-[0.8] lg:h-[500px]">
           <Image
           src="https://images.unsplash.com/photo-1659353888906-adb3e0041693"
