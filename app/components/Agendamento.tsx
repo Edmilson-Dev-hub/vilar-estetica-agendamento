@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export default function Agendamento() {
   return (
-    <section className="min-h-screen flex items-center justify-center rounded-t-[40px] bg-[#f5efe6] px-6 lg:px-16 py-16">
+    <section id="contato" className="min-h-screen flex items-center justify-center  bg-[#f5efe6] px-6 lg:px-16 py-16">
       <div className="w-full max-w-6xl bg-white rounded-[40px] flex flex-col lg:flex-row items-center gap-8 lg:gap-16 p-6 lg:p-10">
 
         <div className="w-full h-[400px] relative lg:flex-[0.9] lg:h-[600px]">
@@ -42,7 +42,7 @@ export default function Agendamento() {
                 <input
                   type="text"
                   placeholder="Seu nome"
-                  className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-x1 px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
+                  className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
                 />
               </div>
               <div>
@@ -50,7 +50,7 @@ export default function Agendamento() {
                 <input
                   type="tel"
                   placeholder="(83) 986379361"
-                  className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-x1 px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
+                  className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
                 />
               </div>
               <div>
@@ -75,6 +75,25 @@ export default function Agendamento() {
                 </select>
               </div>
             </div>
+
+            <div>
+              <label className="block text-sm text-[#2a1a12] mb-2">
+                Mensagem <span className="text-[#a89a86]">(opcional)</span>
+              </label>
+              <textarea
+                placeholder="Conte mais sobre suas necessidades ou dúvidas..."
+                rows={4}
+                className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f] resize-none"
+              ></textarea>
+            </div>
+
+            <button
+              type="submit"
+              className="bg-[#b8794f] text-white px-6 py-3 rounded-full font-medium flex items-center justify-center gap-2 mt-2"
+            >
+              Agendar Consulta
+              <span>→</span>
+            </button>
           </form>
         </div>
       </div>

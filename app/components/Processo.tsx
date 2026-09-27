@@ -1,6 +1,6 @@
 export default function Processo() {
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 lg:px-16 py-20 rounded-t-[40px] bg-[#f5efe6]">
+    <section id="processo" className="min-h-screen flex flex-col items-center justify-center text-center px-6 lg:px-16 py-20 bg-[#f5efe6]">
       <p className="uppercase tracking-widest text-sm text-[#8a7460] mb-4">
         Processo
       </p>
@@ -10,7 +10,7 @@ export default function Processo() {
       <p className="text-lg text-[#5c4a3a] mb-16">
         Um processo simples, seguro e pensado para você.
       </p>
-      <div className="flex items-start w-full max-w-5xl">
+      <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-0 w-full max-w-5xl">
         <div className="flex flex-col items-center flex-1">
             <div className="w-14 h-14 rounded-full border border-[#b8794f] flex items-center justify-center text-[#b8794f] font-serif italic text-lg mb-4">
             01

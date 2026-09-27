@@ -1,7 +1,7 @@
 import Image from 'next/image';
 export default function Hero() {
   return (
-    <section className="min-h-screen flex flex-col lg:flex-row items-center rounded-t-[40px] bg-[#f5efe6] px-6 lg:px-16 pt-28 pb-10">
+    <section id="inicio" className="min-h-screen flex flex-col lg:flex-row items-center rounded-t-[40px] bg-[#f5efe6] px-6 lg:px-16 pt-28 pb-10">
       <div className="flex-[1.2]">
 
         <p className="uppercase tracking-widest text-sm text-[#8a7460] mb-4">
@@ -18,13 +18,13 @@ export default function Hero() {
         </p>
 
         <div className="flex gap-4">
-          <button className="bg-[#b8794f] text-white px-6 py-3 rounded-full font-medium flex items-center gap-2">
+          <a href="#contato" className="bg-[#b8794f] text-white px-6 py-3 rounded-full font-medium flex items-center gap-2">
           Agendar Consulta
           <span>→</span>
-          </button>
-          <button className="border border-[#b8794f] text-[#2a1a12] px-6 py-3 rounded-full font-medium">
+          </a>
+          <a href="#procedimentos" className="border border-[#b8794f] text-[#2a1a12] px-6 py-3 rounded-full font-medium">
             Ver Procedimentos
-          </button>
+          </a>
         </div>
       </div>
       <div className="w-full h-[400px] relative mt-8 lg:mt-0 lg:flex-[0.8] lg:h-[700px]">

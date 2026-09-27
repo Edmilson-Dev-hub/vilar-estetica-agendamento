@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Procedimentos() {
   return (
     <>
-      <section className="min-h-screen flex flex-col rounded-t-[40px] bg-[#f5efe6] px-6 lg:px-16 py-16 gap-16">
+      <section id="procedimentos" className="min-h-screen flex flex-col bg-[#f5efe6] px-6 lg:px-16 py-16 gap-16">
         <div className="flex justify-between items-end">
           <div>
             <p className="uppercase tracking-widest text-sm text-[#8a7460] mb-2">
