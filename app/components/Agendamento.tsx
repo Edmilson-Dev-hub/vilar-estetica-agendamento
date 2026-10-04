@@ -1,6 +1,28 @@
+"use client";
+
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 export default function Agendamento() {
+  const [procedimentos, setProcedimentos] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function buscarProcedimentos() {
+      const { data, error } = await supabase
+        .from('procedimentos')
+        .select('id, nome')
+        .eq('ativo', true);
+
+      if (error) {
+        console.error('Erro ao buscar procedimentos:', error);
+      } else {
+        setProcedimentos(data);
+      }
+    }
+
+    buscarProcedimentos();
+  }, []);
   return (
     <section id="contato" className="min-h-screen flex items-center justify-center  bg-[#f5efe6] px-6 lg:px-16 py-16">
       <div className="w-full max-w-6xl bg-white rounded-[40px] flex flex-col lg:flex-row items-center gap-8 lg:gap-16 p-6 lg:p-10">
@@ -68,10 +90,11 @@ export default function Agendamento() {
                   className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
                 >
                   <option value="">Selecione um procedimento</option>
-                  <option value="preenchimento">Preenchimento Facial</option>
-                  <option value="toxina">Toxina Botulínica</option>
-                  <option value="limpeza">Limpeza de Pele</option>
-                  <option value="peeling">Peeling Químico</option>
+                  {procedimentos.map((proc) => (
+                    <option key={proc.id} value={proc.id}>
+                      {proc.nome}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
