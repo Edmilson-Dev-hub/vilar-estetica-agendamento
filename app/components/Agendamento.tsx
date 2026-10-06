@@ -7,6 +7,14 @@ import { supabase } from '../lib/supabase';
 export default function Agendamento() {
   const [procedimentos, setProcedimentos] = useState<any[]>([]);
 
+  const [form, setForm] = useState({
+  nome: '',
+  telefone: '',
+  email: '',
+  procedimentoId: '',
+  mensagem: '',
+});
+
   useEffect(() => {
     async function buscarProcedimentos() {
       const { data, error } = await supabase
@@ -23,6 +31,23 @@ export default function Agendamento() {
 
     buscarProcedimentos();
   }, []);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  e.preventDefault();
+
+  const resposta = await fetch('/api/agendamentos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(form),
+  });
+
+  if (resposta.ok) {
+    alert('Agendamento enviado com sucesso!');
+    setForm({ nome: '', telefone: '', email: '', procedimentoId: '', mensagem: '' });
+  } else {
+    alert('Não foi possível enviar. Tente novamente.');
+  }
+}
   return (
     <section id="contato" className="min-h-screen flex items-center justify-center  bg-[#f5efe6] px-6 lg:px-16 py-16">
       <div className="w-full max-w-6xl bg-white rounded-[40px] flex flex-col lg:flex-row items-center gap-8 lg:gap-16 p-6 lg:p-10">
@@ -57,12 +82,14 @@ export default function Agendamento() {
             Agende sua consulta e dê o primeiro passo para uma versão ainda mais confiante de você.
           </p>
 
-          <form className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-[#2a1a12] mb-2">Nome completo</label>
                 <input
                   type="text"
+                  value={form.nome}
+                  onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   placeholder="Seu nome"
                   className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
                 />
@@ -70,24 +97,30 @@ export default function Agendamento() {
               <div>
                 <label className="block text-sm text-[#2a1a12] mb-2">Telefone / Whatsapp</label>
                 <input
-                  type="tel"
-                  placeholder="(83) 986379361"
-                  className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
+                type="tel"
+                value={form.telefone}
+                onChange={(e) => setForm({ ...form, telefone: e.target.value })}
+                placeholder="(83) 986379361"
+                className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
                 />
               </div>
               <div>
                 <label className="block text-sm text-[#2a1a12] mb-2">E-mail</label>
                 <input
-                  type="email"
-                  placeholder="seu@email.com"
-                  className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="seu@email.com"
+                className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
                 />
               </div>
 
               <div>
                 <label className="block text-sm text-[#2a1a12] mb-2">Procedimento de interesse</label>
                 <select
-                  className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
+                value={form.procedimentoId}
+                onChange={(e) => setForm({ ...form, procedimentoId: e.target.value })}
+                className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
                 >
                   <option value="">Selecione um procedimento</option>
                   {procedimentos.map((proc) => (
@@ -104,9 +137,11 @@ export default function Agendamento() {
                 Mensagem <span className="text-[#a89a86]">(opcional)</span>
               </label>
               <textarea
+                value={form.mensagem}
+                onChange={(e) => setForm({ ...form, mensagem: e.target.value })}
                 placeholder="Conte mais sobre suas necessidades ou dúvidas..."
                 rows={4}
-                className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f] resize-none"
+                className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
               ></textarea>
             </div>
 
