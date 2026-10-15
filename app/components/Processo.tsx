@@ -1,6 +1,6 @@
 export default function Processo() {
   return (
-    <section id="processo" className="min-h-screen flex flex-col items-center justify-center text-center px-6 lg:px-16 py-20 bg-[#f5efe6]">
+    <section id="processo" className="scroll-mt-24 min-h-screen flex flex-col items-center justify-center text-center px-6 lg:px-16 py-20 bg-[#f5efe6]">
       <p className="uppercase tracking-widest text-sm text-[#8a7460] mb-4">
         Processo
       </p>

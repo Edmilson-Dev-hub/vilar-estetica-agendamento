@@ -15,6 +15,9 @@ export default function Agendamento() {
   mensagem: '',
 });
 
+  const [ enviando, setEnviando ] = useState(false);
+  const [ resultado, setResultado ] = useState<{ tipo: 'sucesso' | 'erro'; texto: string } | null>(null);
+
   useEffect(() => {
     async function buscarProcedimentos() {
       const { data, error } = await supabase
@@ -34,22 +37,32 @@ export default function Agendamento() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
   e.preventDefault();
+  setEnviando(true);
+  setResultado(null);
 
-  const resposta = await fetch('/api/agendamentos', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(form),
-  });
+  try {
+    const resposta = await fetch('/api/agendamentos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    });
 
-  if (resposta.ok) {
-    alert('Agendamento enviado com sucesso!');
-    setForm({ nome: '', telefone: '', email: '', procedimentoId: '', mensagem: '' });
-  } else {
-    alert('Não foi possível enviar. Tente novamente.');
+    const dados = await resposta.json();
+
+    if (resposta.ok) {
+      setResultado({ tipo: 'sucesso', texto: 'Recebemos seu pedido! Entraremos em contato em breve.' });
+      setForm({ nome: '', telefone: '', email: '', procedimentoId: '', mensagem: '' });
+    } else {
+      setResultado({ tipo: 'erro', texto: dados.erro ?? 'Não foi possível enviar. Tente novamente.' });
+    }
+  } catch {
+    setResultado({ tipo: 'erro', texto: 'Falha de conexão. Verifique sua internet e tente novamente.' });
+  } finally {
+    setEnviando(false);
   }
 }
   return (
-    <section id="contato" className="min-h-screen flex items-center justify-center  bg-[#f5efe6] px-6 lg:px-16 py-16">
+    <section id="contato" className="scroll-mt-24 min-h-screen flex items-center justify-center bg-[#f5efe6] px-6 lg:px-16 py-16">
       <div className="w-full max-w-6xl bg-white rounded-[40px] flex flex-col lg:flex-row items-center gap-8 lg:gap-16 p-6 lg:p-10">
 
         <div className="w-full h-[400px] relative lg:flex-[0.9] lg:h-[600px]">
@@ -88,6 +101,7 @@ export default function Agendamento() {
                 <label className="block text-sm text-[#2a1a12] mb-2">Nome completo</label>
                 <input
                   type="text"
+                  required
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
                   placeholder="Seu nome"
@@ -98,6 +112,7 @@ export default function Agendamento() {
                 <label className="block text-sm text-[#2a1a12] mb-2">Telefone / Whatsapp</label>
                 <input
                 type="tel"
+                required
                 value={form.telefone}
                 onChange={(e) => setForm({ ...form, telefone: e.target.value })}
                 placeholder="(83) 986379361"
@@ -108,6 +123,7 @@ export default function Agendamento() {
                 <label className="block text-sm text-[#2a1a12] mb-2">E-mail</label>
                 <input
                 type="email"
+                required
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="seu@email.com"
@@ -118,6 +134,7 @@ export default function Agendamento() {
               <div>
                 <label className="block text-sm text-[#2a1a12] mb-2">Procedimento de interesse</label>
                 <select
+                required
                 value={form.procedimentoId}
                 onChange={(e) => setForm({ ...form, procedimentoId: e.target.value })}
                 className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
@@ -147,11 +164,24 @@ export default function Agendamento() {
 
             <button
               type="submit"
-              className="bg-[#b8794f] text-white px-6 py-3 rounded-full font-medium flex items-center justify-center gap-2 mt-2"
+              disabled={enviando}
+              className="bg-[#b8794f] text-white px-6 py-3 rounded-full font-medium flex items-center justify-center gap-2 mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Agendar Consulta
-              <span>→</span>
+              {enviando ? 'Enviando...' : 'Agendar Consulta'}
+              {!enviando && <span>→</span>}
             </button>
+            {resultado && (
+            <p
+              role="status"
+              className={`rounded-xl px-4 py-3 text-sm ${
+                resultado.tipo === 'sucesso'
+                  ? 'bg-[#eef6ee] text-[#2f5d3a] border border-[#cfe3d1]'
+                  : 'bg-[#fbeeee] text-[#8a2f2f] border border-[#efcfcf]'
+              }`}
+            >
+              {resultado.texto}
+            </p>
+          )}
           </form>
         </div>
       </div>
