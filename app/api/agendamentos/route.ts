@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   const body = await request.json();
   const { nome, telefone, email, procedimentoId, mensagem } = body;
 
-  if(!nome.trim() || !telefone?.trim() || !email?.trim() || !procedimentoId) {
+  if(!nome?.trim() || !telefone?.trim() || !email?.trim() || !procedimentoId) {
     return NextResponse.json(
       { erro: 'Preencha nome, telefone, e-mail e procedimento.'},
       { status: 400 }

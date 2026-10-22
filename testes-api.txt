@@ -1,1 +1,0 @@
-curl.exe -X POST http://localhost:3000/api/agendamentos -H "Content-Type: application/json" -d '{\"nome\":\"Teste\",\"telefone\":\"83999999999\"}'
