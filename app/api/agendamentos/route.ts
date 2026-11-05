@@ -1,71 +1,121 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '../../lib/supabase';
-import { enviarConfirmacao } from '../../lib/email';
+import { supabaseAdmin } from '../../lib/supabaseAdmin';
 
-export async function POST(request: Request) {
-  const body = await request.json();
-  const { nome, telefone, email, procedimentoId, mensagem } = body;
+const MAX_PROCEDIMENTOS = 2;
+const FORMATO_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if(!nome?.trim() || !telefone?.trim() || !email?.trim() || !procedimentoId) {
+type Pedido = {
+  nome: string;
+  telefone: string;
+  email: string;
+  mensagem: string | null;
+  inicio: string;
+  procedimentos: string[];
+};
+
+type Resultado = { pedido: Pedido } | { erro: string };
+
+function recusar(mensagem: string) {
+  return NextResponse.json({ erro: mensagem }, { status: 400 });
+}
+
+type ErroBanco = { code?: string; message?: string };
+
+function respostaDeErro(erro: ErroBanco) {
+  // P0001: uma das regras escritas na função (horário no passado, fora do expediente...)
+  if (erro.code === 'P0001') {
+    return NextResponse.json({ erro: erro.message ?? 'Pedido inválido.' }, { status: 400 });
+  }
+
+  // 23P01: a regra anti-sobreposição do banco (horário já ocupado)
+  if (erro.code === '23P01') {
     return NextResponse.json(
-      { erro: 'Preencha nome, telefone, e-mail e procedimento.'},
-      { status: 400 }
+      { erro: 'Esse horário acabou de ser ocupado. Escolha outro.' },
+      { status: 409 }
     );
   }
 
-  const { data: procedimento, error: erroProcedimento } = await supabase
-    .from('procedimentos')
-    .select('id, nome')
-    .eq('id', procedimentoId)
-    .maybeSingle();
-
-  if (erroProcedimento || !procedimento) {
-    return NextResponse.json(
-      { erro: 'Procedimento não encontrado' },
-      { status: 400 }
-    );
-  }
-
-  const { data: cliente, error: erroCliente } = await supabase
-  .from('clientes')
-  .insert({ nome, telefone, email })
-  .select()
-  .single();
-
-  if (erroCliente) {
-    console.error(' Erro ao criar cliente: ', erroCliente);
-    return NextResponse.json({ erro: ' Não foi possivel salvar o cliente' }, { status: 500 });
-  }
-
-  const { data: agendamento, error: erroAgendamento } = await supabase
-    .from('agendamentos')
-    .insert({
-      cliente_id: cliente.id,
-      procedimento_id: procedimentoId,
-      mensagem,
-      status: 'pendente',
-    })
-    .select()
-    .single();
-
-  if (erroAgendamento) {
-    console.error('Erro ao criar agendamento: ', erroAgendamento);
-    return NextResponse.json({ erro: 'Não foi possível salvar o agendamento' }, { status: 500 });
-  }
-  try {
-  await enviarConfirmacao({
-    nome,
-    email,
-    procedimento: procedimento.nome,
-  });
-} catch (erro) {
-  console.error(
-    'Erro ao enviar e-mail de confirmação:',
-    erro instanceof Error ? erro.message : erro
+  console.error('Erro ao criar agendamento:', erro.code, erro.message);
+  return NextResponse.json(
+    { erro: 'Não foi possível concluir o agendamento agora.' },
+    { status: 500 }
   );
 }
 
-  return NextResponse.json({ mensagem: 'Agendamento criado com sucesso', cliente, agendamento },
+function textoLimpo(valor: unknown) {
+  return typeof valor === 'string' ? valor.trim() : '';
+}
+
+function lerIds(valor: unknown) {
+  if (!Array.isArray(valor)) return [];
+  const ids = valor.filter((id): id is string => typeof id === 'string');
+  return [...new Set(ids)]; // remove repetidos
+}
+
+function idsValidos(ids: string[]) {
+  const quantidadeOk = ids.length >= 1 && ids.length <= MAX_PROCEDIMENTOS;
+  return quantidadeOk && ids.every((id) => FORMATO_UUID.test(id));
+}
+
+function validarPedido(corpo: unknown): Resultado {
+  const dados = (corpo && typeof corpo === 'object' ? corpo : {}) as Record<string, unknown>;
+
+  const nome = textoLimpo(dados.nome);
+  const telefone = textoLimpo(dados.telefone);
+  const email = textoLimpo(dados.email);
+  const mensagem = textoLimpo(dados.mensagem);
+  const inicio = new Date(textoLimpo(dados.inicio));
+  const procedimentos = lerIds(dados.procedimentos);
+
+  if (!nome || !telefone || !email) return { erro: 'Preencha nome, telefone e e-mail.' };
+
+  const grandeDemais =
+    nome.length > 100 || telefone.length > 20 || email.length > 120 || mensagem.length > 500;
+  if (grandeDemais) return { erro: 'Algum campo ficou grande demais.' };
+
+  if (!FORMATO_EMAIL.test(email)) return { erro: 'E-mail inválido.' };
+  if (Number.isNaN(inicio.getTime())) return { erro: 'Escolha um horário.' };
+  if (!idsValidos(procedimentos)) return { erro: 'Escolha de 1 a 2 procedimentos.' };
+
+  return {
+    pedido: {
+      nome,
+      telefone,
+      email,
+      mensagem: mensagem || null,
+      inicio: inicio.toISOString(),
+      procedimentos,
+    },
+  };
+}
+
+export async function POST(request: Request) {
+  let corpo: unknown;
+  try {
+    corpo = await request.json();
+  } catch {
+    return recusar('Corpo da requisição inválido.');
+  }
+
+  const resultado = validarPedido(corpo);
+  if ('erro' in resultado) return recusar(resultado.erro);
+
+  const { pedido } = resultado;
+
+  const { data, error } = await supabaseAdmin.rpc('criar_agendamento', {
+    p_nome: pedido.nome,
+    p_telefone: pedido.telefone,
+    p_email: pedido.email,
+    p_mensagem: pedido.mensagem,
+    p_inicio: pedido.inicio,
+    p_procedimentos: pedido.procedimentos,
+  });
+
+  if (error) return respostaDeErro(error);
+
+  return NextResponse.json(
+    { mensagem: 'Agendamento confirmado.', agendamento: data },
     { status: 201 }
   );
 }
