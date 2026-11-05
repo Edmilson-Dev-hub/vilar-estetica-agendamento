@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '../../lib/supabaseAdmin';
+import { enviarConfirmacao } from '../../lib/email';
 
 const MAX_PROCEDIMENTOS = 2;
 const FORMATO_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -41,6 +42,46 @@ function respostaDeErro(erro: ErroBanco) {
     { erro: 'Não foi possível concluir o agendamento agora.' },
     { status: 500 }
   );
+}
+
+type AgendamentoCriado = {
+  agendamento_id: string;
+  inicio: string;
+  fim: string;
+  valor: number;
+};
+
+async function enviarEmailDeConfirmacao(pedido: Pedido, agendamento: AgendamentoCriado) {
+  try {
+    const { data: itens, error } = await supabaseAdmin
+      .from('agendamento_procedimentos')
+      .select('valor_cobrado, procedimentos(nome)')
+      .eq('agendamento_id', agendamento.agendamento_id);
+
+    if (error || !itens) throw new Error('Não foi possível ler os procedimentos do agendamento.');
+
+    const procedimentos = itens.map((item) => {
+      const procedimento = Array.isArray(item.procedimentos)
+        ? item.procedimentos[0]
+        : item.procedimentos;
+      return { nome: procedimento?.nome ?? 'Procedimento', valor: Number(item.valor_cobrado) };
+    });
+
+    await enviarConfirmacao({
+      nome: pedido.nome,
+      email: pedido.email,
+      inicio: agendamento.inicio,
+      fim: agendamento.fim,
+      procedimentos,
+      valorTotal: Number(agendamento.valor),
+    });
+  } catch (erro) {
+    // O agendamento já está salvo: se o e-mail falhar, só registramos no log.
+    console.error(
+      'Erro ao enviar e-mail de confirmação:',
+      erro instanceof Error ? erro.message : erro
+    );
+  }
 }
 
 function textoLimpo(valor: unknown) {
@@ -114,6 +155,8 @@ export async function POST(request: Request) {
 
   if (error) return respostaDeErro(error);
 
+  await enviarEmailDeConfirmacao(pedido, data);
+  
   return NextResponse.json(
     { mensagem: 'Agendamento confirmado.', agendamento: data },
     { status: 201 }
