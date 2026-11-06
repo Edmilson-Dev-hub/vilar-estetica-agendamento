@@ -12,6 +12,7 @@ export default function Agendamento() {
   telefone: '',
   email: '',
   procedimentoId: '',
+  procedimentoId2: '',
   mensagem: '',
 });
 
@@ -51,7 +52,7 @@ export default function Agendamento() {
 
     if (resposta.ok) {
       setResultado({ tipo: 'sucesso', texto: 'Recebemos seu pedido! Entraremos em contato em breve.' });
-      setForm({ nome: '', telefone: '', email: '', procedimentoId: '', mensagem: '' });
+      setForm({ nome: '', telefone: '', email: '', procedimentoId: '', procedimentoId2: '', mensagem: '' });
     } else {
       setResultado({ tipo: 'erro', texto: dados.erro ?? 'Não foi possível enviar. Tente novamente.' });
     }
@@ -119,7 +120,7 @@ export default function Agendamento() {
                 className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
                 />
               </div>
-              <div>
+              <div className="sm:col-span-2">
                 <label className="block text-sm text-[#2a1a12] mb-2">E-mail</label>
                 <input
                 type="email"
@@ -131,13 +132,20 @@ export default function Agendamento() {
                 />
               </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:col-span-2">
               <div>
                 <label className="block text-sm text-[#2a1a12] mb-2">Procedimento de interesse</label>
                 <select
-                required
-                value={form.procedimentoId}
-                onChange={(e) => setForm({ ...form, procedimentoId: e.target.value })}
-                className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm placeholder:text-[#a89a86] focus:outline-none focus:border-[#b8794f]"
+                  required
+                  value={form.procedimentoId}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      procedimentoId: e.target.value,
+                      procedimentoId2: form.procedimentoId2 === e.target.value ? '' : form.procedimentoId2,
+                    })
+                  }
+                  className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#b8794f]"
                 >
                   <option value="">Selecione um procedimento</option>
                   {procedimentos.map((proc) => (
@@ -147,6 +155,28 @@ export default function Agendamento() {
                   ))}
                 </select>
               </div>
+
+              <div>
+                <label className="block text-sm text-[#2a1a12] mb-2">
+                  Segundo procedimento <span className="text-[#a89a86]">(opcional)</span>
+                </label>
+                <select
+                  value={form.procedimentoId2}
+                  onChange={(e) => setForm({ ...form, procedimentoId2: e.target.value })}
+                  disabled={!form.procedimentoId}
+                  className="w-full bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#b8794f] disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  <option value="">Nenhum</option>
+                  {procedimentos
+                    .filter((proc) => proc.id !== form.procedimentoId)
+                    .map((proc) => (
+                      <option key={proc.id} value={proc.id}>
+                        {proc.nome}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
             </div>
 
             <div>
