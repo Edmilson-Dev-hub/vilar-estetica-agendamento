@@ -4,6 +4,19 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
+type Horario = { inicio: string; rotulo: string };
+
+type Disponibilidade = {
+  duracaoMinutos: number;
+  valorTotal: number;
+  horarios: Horario[];
+};
+
+function hojeNaClinica() {
+  // 'en-CA' escreve a data como 2026-11-06, o formato que o campo de data usa
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Fortaleza' });
+}
+
 export default function Agendamento() {
   const [procedimentos, setProcedimentos] = useState<any[]>([]);
 
@@ -18,6 +31,10 @@ export default function Agendamento() {
 
   const [ enviando, setEnviando ] = useState(false);
   const [ resultado, setResultado ] = useState<{ tipo: 'sucesso' | 'erro'; texto: string } | null>(null);
+  const [data, setData] = useState('');
+  const [disponibilidade, setDisponibilidade] = useState<Disponibilidade | null>(null);
+  const [carregandoHorarios, setCarregandoHorarios] = useState(false);
+  const [erroHorarios, setErroHorarios] = useState('');
 
   useEffect(() => {
     async function buscarProcedimentos() {
@@ -35,6 +52,50 @@ export default function Agendamento() {
 
     buscarProcedimentos();
   }, []);
+
+  useEffect(() => {
+    const ids = [form.procedimentoId, form.procedimentoId2].filter(Boolean);
+
+    if (!data || ids.length === 0) {
+      setDisponibilidade(null);
+      setErroHorarios('');
+      setCarregandoHorarios(false);
+      return;
+    }
+
+    let cancelado = false;
+
+    async function buscarHorarios() {
+      setCarregandoHorarios(true);
+      setErroHorarios('');
+
+      try {
+        const resposta = await fetch(`/api/horarios?data=${data}&procedimentos=${ids.join(',')}`);
+        const dados = await resposta.json();
+        if (cancelado) return;
+
+        if (resposta.ok) {
+          setDisponibilidade(dados);
+        } else {
+          setDisponibilidade(null);
+          setErroHorarios(dados.erro ?? 'Não foi possível carregar os horários.');
+        }
+      } catch {
+        if (!cancelado) {
+          setDisponibilidade(null);
+          setErroHorarios('Falha de conexão ao carregar os horários.');
+        }
+      } finally {
+        if (!cancelado) setCarregandoHorarios(false);
+      }
+    }
+
+    buscarHorarios();
+
+    return () => {
+      cancelado = true;
+    };
+  }, [data, form.procedimentoId, form.procedimentoId2]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
   e.preventDefault();
@@ -62,6 +123,7 @@ export default function Agendamento() {
     setEnviando(false);
   }
 }
+  const horarios = disponibilidade?.horarios ?? [];
   return (
     <section id="contato" className="scroll-mt-24 min-h-screen flex items-center justify-center bg-[#f5efe6] px-6 lg:px-16 py-16">
       <div className="w-full max-w-6xl bg-white rounded-[40px] flex flex-col lg:flex-row items-center gap-8 lg:gap-16 p-6 lg:p-10">
@@ -178,7 +240,44 @@ export default function Agendamento() {
               </div>
             </div>
             </div>
+            <div>
+              <label className="block text-sm text-[#2a1a12] mb-2">Data</label>
+              <input
+                type="date"
+                required
+                min={hojeNaClinica()}
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+                className="w-full sm:w-1/2 bg-[#f5efe6] border border-[#e8ddd0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#b8794f]"
+              />
+            </div>
 
+            {data && form.procedimentoId && (
+              <div>
+                <p className="text-sm text-[#2a1a12] mb-2">Horários disponíveis</p>
+
+                {carregandoHorarios && <p className="text-sm text-[#8a7460]">Carregando horários...</p>}
+
+                {erroHorarios && <p className="text-sm text-[#8a2f2f]">{erroHorarios}</p>}
+
+                {!carregandoHorarios && !erroHorarios && disponibilidade && horarios.length === 0 && (
+                  <p className="text-sm text-[#8a7460]">Sem horários livres nesse dia. Escolha outra data.</p>
+                )}
+
+                {!carregandoHorarios && horarios.length > 0 && (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {horarios.map((horario) => (
+                      <span
+                        key={horario.inicio}
+                        className="text-center rounded-xl border border-[#e8ddd0] bg-[#f5efe6] py-2 text-sm text-[#2a1a12]"
+                      >
+                        {horario.rotulo}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             <div>
               <label className="block text-sm text-[#2a1a12] mb-2">
                 Mensagem <span className="text-[#a89a86]">(opcional)</span>
