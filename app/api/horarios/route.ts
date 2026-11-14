@@ -7,6 +7,9 @@ const MINUTO = 60 * 1000;
 const FUSO = '-03:00'; // João Pessoa fica em UTC-3 o ano todo (sem horário de verão)
 const FORMATO_DATA = /^\d{4}-\d{2}-\d{2}$/;
 const FORMATO_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const DIA = 24 * 60 * MINUTO;
+
+type Intervalo = { inicio: number; fim: number }; // em milissegundos
 
 function recusar(mensagem: string) {
   return NextResponse.json({ erro: mensagem }, { status: 400 });
@@ -53,15 +56,34 @@ function rotulo(minutos: number) {
   return `${horas}:${resto}`;
 }
 
-function gerarHorarios(data: string, abre: string, fecha: string, duracao: number) {
-  const meiaNoite = new Date(`${data}T00:00:00${FUSO}`).getTime();
+function meiaNoiteLocal(data: string) {
+  return new Date(`${data}T00:00:00${FUSO}`).getTime();
+}
+
+function conflita(inicio: number, fim: number, ocupados: Intervalo[]) {
+  return ocupados.some((ocupado) => inicio < ocupado.fim && fim > ocupado.inicio);
+}
+
+type ParametrosHorarios = {
+  meiaNoite: number;
+  abre: string;
+  fecha: string;
+  duracao: number;
+  ocupados: Intervalo[];
+};
+
+function gerarHorarios({ meiaNoite, abre, fecha, duracao, ocupados }: ParametrosHorarios) {
+  const agora = Date.now();
   const horarios: { inicio: string; rotulo: string }[] = [];
 
   for (let minuto = paraMinutos(abre); minuto + duracao <= paraMinutos(fecha); minuto += BLOCO_MINUTOS) {
-    horarios.push({
-      inicio: new Date(meiaNoite + minuto * MINUTO).toISOString(),
-      rotulo: rotulo(minuto),
-    });
+    const inicio = meiaNoite + minuto * MINUTO;
+    const fim = inicio + duracao * MINUTO;
+
+    if (inicio <= agora) continue;
+    if (conflita(inicio, fim, ocupados)) continue;
+
+    horarios.push({ inicio: new Date(inicio).toISOString(), rotulo: rotulo(minuto) });
   }
 
   return horarios;
@@ -105,8 +127,32 @@ export async function GET(request: Request) {
     );
   }
 
+  const meiaNoite = meiaNoiteLocal(data);
+
+  const { data: agendamentos, error: erroAgenda } = await supabaseAdmin
+    .from('agendamentos')
+    .select('inicio, fim')
+    .neq('status', 'cancelado')
+    .lt('inicio', new Date(meiaNoite + DIA).toISOString())
+    .gt('fim', new Date(meiaNoite).toISOString());
+
+  if (erroAgenda || !agendamentos) {
+    return NextResponse.json({ erro: 'Não foi possível consultar a agenda.' }, { status: 500 });
+  }
+
+  const ocupados = agendamentos.map((agendamento) => ({
+    inicio: new Date(agendamento.inicio).getTime(),
+    fim: new Date(agendamento.fim).getTime(),
+  }));
+
   const horarios = funcionamento
-    ? gerarHorarios(data, funcionamento.abre, funcionamento.fecha, duracaoEmBlocos)
+    ? gerarHorarios({
+        meiaNoite,
+        abre: funcionamento.abre,
+        fecha: funcionamento.fecha,
+        duracao: duracaoEmBlocos,
+        ocupados,
+      })
     : [];
 
   return NextResponse.json({ data, duracaoMinutos: duracaoEmBlocos, valorTotal, horarios });
