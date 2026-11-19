@@ -35,7 +35,7 @@ export default function Procedimentos() {
             </div>
             <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3">
               <p className="font-serif text-[#2a1a12]">Preenchimento Facial</p>
-              <span className="text-[#b8794f]">→</span>
+              <span className="text-[#b8794f]"></span>
             </div>
           </div>
 
@@ -50,7 +50,7 @@ export default function Procedimentos() {
             </div>
             <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3">
               <p className="font-serif text-[#2a1a12]">Toxina Botulínica</p>
-              <span className="text-[#b8794f]">→</span>
+              <span className="text-[#b8794f]"></span>
             </div>
           </div>
 
@@ -65,7 +65,7 @@ export default function Procedimentos() {
             </div>
             <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3">
               <p className="font-serif text-[#2a1a12]">Lipo de Papada</p>
-              <span className="text-[#b8794f]">→</span>
+              <span className="text-[#b8794f]"></span>
             </div>
           </div>
 
@@ -80,7 +80,7 @@ export default function Procedimentos() {
             </div>
             <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3">
               <p className="font-serif text-[#2a1a12]">Fios de Sustentação</p>
-              <span className="text-[#b8794f]">→</span>
+              <span className="text-[#b8794f]"></span>
             </div>
           </div>
         </div>
@@ -118,7 +118,7 @@ export default function Procedimentos() {
             </div>
             <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3">
               <p className="font-serif text-[#2a1a12]">Bioestimuladores de Colágeno</p>
-              <span className="text-[#b8794f]">→</span>
+              <span className="text-[#b8794f]"></span>
             </div>
           </div>
 
@@ -133,7 +133,7 @@ export default function Procedimentos() {
             </div>
             <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3">
               <p className="font-serif text-[#2a1a12]">Skinbooster</p>
-              <span className="text-[#b8794f]">→</span>
+              <span className="text-[#b8794f]"></span>
             </div>
           </div>
 
@@ -148,7 +148,7 @@ export default function Procedimentos() {
             </div>
             <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3">
               <p className="font-serif text-[#2a1a12]">Ultrassom Microfocado</p>
-              <span className="text-[#b8794f]">→</span>
+              <span className="text-[#b8794f]"></span>
             </div>
           </div>
 
@@ -163,7 +163,7 @@ export default function Procedimentos() {
             </div>
             <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3">
               <p className="font-serif text-[#2a1a12]">Radiofrequência</p>
-              <span className="text-[#b8794f]">→</span>
+              <span className="text-[#b8794f]"></span>
             </div>
           </div>
         </div>
@@ -201,7 +201,7 @@ export default function Procedimentos() {
             </div>
             <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3">
               <p className="font-serif text-[#2a1a12]">Limpeza de Pele</p>
-              <span className="text-[#b8794f]">→</span>
+              <span className="text-[#b8794f]"></span>
             </div>
           </div>
 
@@ -216,7 +216,7 @@ export default function Procedimentos() {
             </div>
             <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3">
               <p className="font-serif text-[#2a1a12]">Peeling Químico</p>
-              <span className="text-[#b8794f]">→</span>
+              <span className="text-[#b8794f]"></span>
             </div>
           </div>
 
@@ -231,7 +231,7 @@ export default function Procedimentos() {
             </div>
             <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3">
               <p className="font-serif text-[#2a1a12]">Microagulhamento</p>
-              <span className="text-[#b8794f]">→</span>
+              <span className="text-[#b8794f]"></span>
             </div>
           </div>
 
@@ -246,7 +246,7 @@ export default function Procedimentos() {
             </div>
             <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3">
               <p className="font-serif text-[#2a1a12]">Tratamento de Manchas</p>
-              <span className="text-[#b8794f]">→</span>
+              <span className="text-[#b8794f]"></span>
             </div>
           </div>
         </div>
