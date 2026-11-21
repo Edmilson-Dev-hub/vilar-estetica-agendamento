@@ -36,9 +36,9 @@ export default function Footer() {
                 Contato
             </p>
             <div className="flex flex-col gap-2">
-                <p>(83) 99999-9999</p>
+                <p>(83) 98637-9361</p>
                 <p>@villar.estetica</p>
-                <p>João Pessoa — PB</p>
+                <p>João Pessoa — PB, Shopping Manaíra</p>
             </div>
         </div>
         </div>
