@@ -16,11 +16,6 @@ export default function Procedimentos() {
               Equilíbrio e proporção, respeitando a individualidade de cada rosto.
             </p>
           </div>
-
-          <a className="flex items-center gap-2 text-[#b8794f] whitespace-nowrap">
-            Ver todos
-            <span>→</span>
-          </a>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -95,11 +90,6 @@ export default function Procedimentos() {
               Tratamentos que estimulam a pele e suavizam os sinais do tempo.
             </p>
           </div>
-
-          <a    className="flex items-center gap-2 text-[#b8794f] whitespace-nowrap">
-            Ver todos
-            <span>→</span>
-          </a>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -174,11 +164,6 @@ export default function Procedimentos() {
               Cuidados personalizados para uma pele mais uniforme, hidratada e saudável.
             </p>
           </div>
-
-          <a    className="flex items-center gap-2 text-[#b8794f] whitespace-nowrap">
-            Ver todos
-            <span>→</span>
-          </a>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
